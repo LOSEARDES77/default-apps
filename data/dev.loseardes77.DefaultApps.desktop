@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Default Apps
+Comment=Choose which applications open your files and links
+Exec=default-apps
+Icon=dev.loseardes77.DefaultApps
+Terminal=false
+Categories=Settings;GTK;
+Keywords=default;applications;mime;browser;terminal;editor;
+StartupNotify=true
