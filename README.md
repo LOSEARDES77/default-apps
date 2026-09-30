@@ -67,8 +67,8 @@ Linux has no standard "default terminal" setting. The choice is stored under
 `x-scheme-handler/terminal`, which most desktops do not read by themselves. To
 use it, launch your terminal through a lookup, for example in Hyprland:
 
-```
-bind = SUPER, Return, exec, gtk-launch $(xdg-mime query default x-scheme-handler/terminal)
+```lua
+  hl.bind("SUPER + Return", hl.dsp.exec_cmd("gtk-launch $(xdg-mime query default x-scheme-handler/terminal)"))
 ```
 
 ### Files without their own type
