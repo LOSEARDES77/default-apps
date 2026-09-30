@@ -285,6 +285,10 @@ fn make_row(
 }
 
 fn build_ui(app: &adw::Application) {
+    // Launching again while running re-activates this process: reuse the window.
+    if let Some(window) = app.active_window() {
+        return window.present();
+    }
     let refreshers = Refreshers::default();
     let search = gtk::SearchEntry::builder()
         .placeholder_text("Search apps and file types…")

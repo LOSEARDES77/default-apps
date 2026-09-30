@@ -21,6 +21,17 @@ makepkg -si
 This installs the binary, a launcher entry and the icon. Run the PKGBUILD from
 `packaging/`, not from the project root.
 
+## AppImage
+
+```sh
+packaging/appimage.sh
+```
+
+This downloads `linuxdeploy` on first run and writes
+`packaging/Default_Apps-x86_64.AppImage` with GTK 4 and libadwaita bundled.
+glibc is not bundled, so the result only runs on systems whose glibc is at
+least as new as the one on the build machine.
+
 ## Build and run from source
 
 Requires Rust, GTK 4 and libadwaita 1.5 or newer.

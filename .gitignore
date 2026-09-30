@@ -32,3 +32,8 @@ dist-ssr
 /packaging/src
 /packaging/pkg
 /packaging/*.pkg.tar.*
+
+# AppImage
+/packaging/.appimage-tools
+/packaging/AppDir
+/packaging/*.AppImage
