@@ -1,0 +1,80 @@
+name: CI
+
+# Every push and pull request builds the packages. Pushing a tag like v0.1.0
+# also publishes them as a GitHub release.
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  debian:
+    name: Lint, .deb and AppImage
+    # Built on the oldest supported distro so the results run on anything newer.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libgtk-4-dev libadwaita-1-dev
+      - run: cargo clippy --locked -- -D warnings
+      - run: cargo install --locked cargo-deb
+      - run: cargo deb --locked
+      - run: packaging/appimage.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debian
+          path: |
+            target/debian/*.deb
+            packaging/*.AppImage
+          if-no-files-found: error
+
+  fedora:
+    name: .rpm
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - run: dnf install -y cargo gcc git gtk4-devel libadwaita-devel rpm-build
+      - uses: actions/checkout@v4
+      - run: cargo build --release --locked
+      - run: cargo install --locked cargo-generate-rpm
+      - run: cargo generate-rpm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fedora
+          path: target/generate-rpm/*.rpm
+          if-no-files-found: error
+
+  arch:
+    name: Arch package
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Syu --noconfirm base-devel cargo git gtk4 libadwaita
+      - uses: actions/checkout@v4
+      # makepkg refuses to run as root
+      - run: useradd -m builder && chown -R builder .
+      - run: su builder -c "cd packaging && makepkg"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arch
+          path: packaging/*.pkg.tar.zst
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [debian, fedora, arch]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - run: gh release create "$GITHUB_REF_NAME" $(find dist -type f) --repo "$GITHUB_REPOSITORY" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

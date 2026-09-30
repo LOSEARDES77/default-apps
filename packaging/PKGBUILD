@@ -1,10 +1,12 @@
 # Lives in packaging/ (not the repo root) so makepkg's own src/ and pkg/ work
 # dirs never collide with the crate's src/.
 pkgname=default-apps
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="Choose which applications open your files and links"
 arch=('x86_64')
+url="https://github.com/LOSEARDES77/default-apps"
+license=('MIT')
 depends=('gtk4' 'libadwaita')
 makedepends=('cargo')
 options=('!debug')
@@ -21,4 +23,5 @@ package() {
   install -Dm755 target/release/default-apps "$pkgdir/usr/bin/default-apps"
   install -Dm644 "data/$_id.desktop" "$pkgdir/usr/share/applications/$_id.desktop"
   install -Dm644 "data/$_id.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/$_id.svg"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

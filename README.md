@@ -11,26 +11,34 @@ links on Linux. It is a graphical front end for what `xdg-mime default` does.
 - **All file types**: every MIME type that an installed app declares, with
   search.
 
-## Install (Arch Linux)
+## Install
+
+Tagged versions publish a `.deb`, an `.rpm`, an Arch package and an AppImage on the
+[releases page](https://github.com/LOSEARDES77/default-apps/releases).
+
+| System                    | Command                                              |
+| ------------------------- | ---------------------------------------------------- |
+| Debian 13+, Ubuntu 24.04+ | `sudo apt install ./default-apps_*.deb`              |
+| Fedora                    | `sudo dnf install ./default-apps-*.rpm`              |
+| Arch Linux                | `sudo pacman -U ./default-apps-*.pkg.tar.zst`        |
+| Anything else             | `chmod +x Default_Apps-x86_64.AppImage`, then run it |
+
+The AppImage bundles GTK 4 and libadwaita and needs glibc 2.39 or newer.
+
+## Building the packages yourself
+
+Each package has to be built on the distro it targets.
 
 ```sh
-cd packaging
-makepkg -si
+cargo install cargo-deb && cargo deb                                        # Debian, Ubuntu
+cargo install cargo-generate-rpm && cargo build --release && cargo generate-rpm   # Fedora
+cd packaging && makepkg -si                                                 # Arch
+packaging/appimage.sh                                                       # AppImage
 ```
 
-This installs the binary, a launcher entry and the icon. Run the PKGBUILD from
-`packaging/`, not from the project root.
-
-## AppImage
-
-```sh
-packaging/appimage.sh
-```
-
-This downloads `linuxdeploy` on first run and writes
-`packaging/Default_Apps-x86_64.AppImage` with GTK 4 and libadwaita bundled.
-glibc is not bundled, so the result only runs on systems whose glibc is at
-least as new as the one on the build machine.
+Run the PKGBUILD from `packaging/`, not from the project root. An AppImage only
+runs on systems whose glibc is at least as new as the build machine's, which is
+why releases are built on Ubuntu 24.04.
 
 ## Build and run from source
 
@@ -49,7 +57,7 @@ Choices are written through GIO to `~/.config/mimeapps.list`, the same file
 xdg-mime query default application/pdf
 ```
 
-Grouped entries set several MIME types at once. For example, *Web browser*
+Grouped entries set several MIME types at once. For example, _Web browser_
 sets `x-scheme-handler/http`, `x-scheme-handler/https` and `text/html`. The
 groups are defined in the `SPECIALS` table at the top of `src/main.rs`.
 
@@ -66,4 +74,8 @@ bind = SUPER, Return, exec, gtk-launch $(xdg-mime query default x-scheme-handler
 ### Files without their own type
 
 `.ini`, `.conf`, `.env` and similar files are plain text as far as the system
-is concerned, so they follow *Text editor* rather than *Code editor*.
+is concerned, so they follow _Text editor_ rather than _Code editor_.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
