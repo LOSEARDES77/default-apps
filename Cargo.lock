@@ -49,7 +49,7 @@ dependencies = [
 
 [[package]]
 name = "default-apps"
-version = "0.1.1-1"
+version = "0.1.1"
 dependencies = [
  "gtk4",
  "libadwaita",
